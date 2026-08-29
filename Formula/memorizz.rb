@@ -181,6 +181,7 @@ class Memorizz < Formula
       report = memorizz.capabilities()
       assert memorizz.__version__ == "#{version}"
       assert report["capability_schema"] == 4
+      assert report["features"]["mcp_server"]["tool_count"] == 24
       assert report["features"]["structured_tool_outcomes"]["available"]
     PYTHON
   end
