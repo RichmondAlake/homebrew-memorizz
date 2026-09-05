@@ -7,8 +7,13 @@ class Memorizz < Formula
   sha256 "434c22e1100077064885e60936b8bb3217792fd9cda1f88aa2032cec0f98d720"
   license "PolyForm-Noncommercial-1.0.0"
 
+  depends_on "ninja" => :build
   depends_on "rust" => :build
   depends_on "python@3.12"
+
+  on_linux do
+    depends_on "patchelf" => :build
+  end
 
   resource "annotated-doc" do
     url "https://files.pythonhosted.org/packages/5a/8e/38aa427ed5402449e226975b649c5dc73ccadfefeb95e6aecb8f8ea4b6b6/annotated_doc-0.0.5.tar.gz"
@@ -177,9 +182,13 @@ class Memorizz < Formula
   test do
     assert_match "memorizz #{version}", shell_output("#{bin}/memorizz --version")
     system libexec/"bin/python", "-c", <<~PYTHON
+      import inspect
       import memorizz
+      import numpy as np
       report = memorizz.capabilities()
       assert memorizz.__version__ == "#{version}"
+      assert inspect.signature(memorizz.MemAgent).parameters["streaming"].default is True
+      assert np.array([1, 2, 3]).sum() == 6
       assert report["capability_schema"] == 4
       assert report["features"]["mcp_server"]["tool_count"] == 24
       assert report["features"]["structured_tool_outcomes"]["available"]
