@@ -3,15 +3,9 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/61/cd/96ba55ad563a926991fb5b9cef21fee9c133c08a6a87eaf0b184eba2f32d/memorizz-0.8.0.tar.gz"
-  sha256 "434c22e1100077064885e60936b8bb3217792fd9cda1f88aa2032cec0f98d720"
+  url "https://files.pythonhosted.org/packages/94/2d/9cbf8883bb0f0cab0795054b3f9641f848cd2504e8b208de78774d9eb7c7/memorizz-0.9.0.tar.gz"
+  sha256 "17a7dc6fe224fb4f63ab0681b10655b5e831c32818f0219da704b1d07f5af759"
   license "PolyForm-Noncommercial-1.0.0"
-
-  bottle do
-    root_url "https://github.com/RichmondAlake/homebrew-memorizz/releases/download/memorizz-0.8.0"
-    sha256 cellar: :any, arm64_tahoe:  "4226f842d048de076766ed928580d11a9e4f58c6fd06d5f179411e11c4a72682"
-    sha256 cellar: :any, x86_64_linux: "70dde8e3d51fa9f29ac6b60245eb31d648f129403ea0d39a880b3a907c970cad"
-  end
 
   depends_on "ninja" => :build
   depends_on "rust" => :build
@@ -194,6 +188,12 @@ class Memorizz < Formula
       report = memorizz.capabilities()
       assert memorizz.__version__ == "#{version}"
       assert inspect.signature(memorizz.MemAgent).parameters["streaming"].default is True
+      delegation = inspect.signature(memorizz.MemAgent.delegate).parameters
+      assert {"cancellation", "on_task_event", "on_task_result", "task_completion_policy"} <= delegation.keys()
+      from memorizz.multi_agent_orchestrator import MultiAgentOrchestrator
+      defaults = inspect.signature(MultiAgentOrchestrator).parameters
+      assert defaults["allow_root_fallback"].default is False
+      assert defaults["thread_strategy"].default == "task"
       assert np.array([1, 2, 3]).sum() == 6
       assert report["capability_schema"] == 4
       assert report["features"]["mcp_server"]["tool_count"] == 24
