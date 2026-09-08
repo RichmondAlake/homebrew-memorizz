@@ -3,15 +3,9 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/94/2d/9cbf8883bb0f0cab0795054b3f9641f848cd2504e8b208de78774d9eb7c7/memorizz-0.9.0.tar.gz"
-  sha256 "17a7dc6fe224fb4f63ab0681b10655b5e831c32818f0219da704b1d07f5af759"
+  url "https://files.pythonhosted.org/packages/b1/03/f366deb24b0f41e5f5d0af5cf5aad2bf0ea8dc41fd4b6f3cd7db03c74245/memorizz-0.10.0.tar.gz"
+  sha256 "f67c1a795a23bee275cd0326d4d86a34c17fd424f0ff755bd1b6b022e34df02a"
   license "PolyForm-Noncommercial-1.0.0"
-
-  bottle do
-    root_url "https://github.com/RichmondAlake/homebrew-memorizz/releases/download/memorizz-0.9.0"
-    sha256 cellar: :any, arm64_tahoe:  "702fc8eaca499b3a1149e2d4058aa4166379460587584ac5603e429a0c49a78a"
-    sha256 cellar: :any, x86_64_linux: "bb7dbf59e74af969db4f8159c4d7b1af1725a9f9ee61a894c8b86a5ba872b473"
-  end
 
   depends_on "ninja" => :build
   depends_on "rust" => :build
@@ -104,6 +98,11 @@ class Memorizz < Formula
   resource "openai" do
     url "https://files.pythonhosted.org/packages/3e/d3/50ffb9a7bce5097ffeb476905c0661f4468a3ca7bb489b152542f14fdd8e/openai-3.5.0.tar.gz"
     sha256 "743738bb458a586d0d02d173bf398d29d7d7a80d182d167aa74f1c08814ecc78"
+  end
+
+  resource "packaging" do
+    url "https://files.pythonhosted.org/packages/7d/fa/3944b40b07da9ce895c0e6303a5ab7d53da063554f534556b134a54d6093/packaging-26.3.tar.gz"
+    sha256 "94edc256424af38762eb31306eed28beb9f0efc50a8837492c9d6fd6004aed79"
   end
 
   resource "prompt-toolkit" do
@@ -204,6 +203,15 @@ class Memorizz < Formula
       assert report["capability_schema"] == 4
       assert report["features"]["mcp_server"]["tool_count"] == 24
       assert report["features"]["structured_tool_outcomes"]["available"]
+      from memorizz.observability import aggregate_usage, query_usage, RateCard, PricingRegistry
+      from memorizz.cli.updates import upgrade_command
+      from memorizz.memagent.managers.persona_manager import PersonaManager
+      from zoneinfo import ZoneInfo
+      assert aggregate_usage([], timezone_name="Europe/London")["totals"]["calls"] == 0
+      assert ZoneInfo("Europe/London")
+      assert callable(query_usage)
+      assert callable(PersonaManager.use_snapshot)
+      assert upgrade_command() == "brew upgrade memorizz"
     PYTHON
   end
 end
