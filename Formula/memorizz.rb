@@ -3,15 +3,9 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/b1/03/f366deb24b0f41e5f5d0af5cf5aad2bf0ea8dc41fd4b6f3cd7db03c74245/memorizz-0.10.0.tar.gz"
-  sha256 "f67c1a795a23bee275cd0326d4d86a34c17fd424f0ff755bd1b6b022e34df02a"
+  url "https://files.pythonhosted.org/packages/cc/4b/256cd92bceb061c5d3ffc98f4d2354ff4acb4122d0f51fbab3a0090991b2/memorizz-0.11.0.tar.gz"
+  sha256 "dfe2c34f45fd860950dd1ab9438bd55e49b59e1665be54741fc2d94199c323cd"
   license "PolyForm-Noncommercial-1.0.0"
-
-  bottle do
-    root_url "https://github.com/RichmondAlake/homebrew-memorizz/releases/download/memorizz-0.10.0"
-    sha256 cellar: :any, arm64_tahoe:  "b881c061487e7b261f32abd3e3e8d1e34ed3bd1dbcf9ccc602b1d229a4349867"
-    sha256 cellar: :any, x86_64_linux: "6f5b7f2d3d3d9845652d59d2e14495e32096e781449780f8304758b104c45da1"
-  end
 
   depends_on "ninja" => :build
   depends_on "rust" => :build
@@ -192,6 +186,8 @@ class Memorizz < Formula
 
   test do
     assert_match "memorizz #{version}", shell_output("#{bin}/memorizz --version")
+    system bin/"memorizz", "memory", "configure", "--help"
+    system bin/"memorizz", "notion", "--help"
     system libexec/"bin/python", "-c", <<~PYTHON
       import inspect
       import memorizz
@@ -218,6 +214,9 @@ class Memorizz < Formula
       assert callable(query_usage)
       assert callable(PersonaManager.use_snapshot)
       assert upgrade_command() == "brew upgrade memorizz"
+      from memorizz import NotionProvider, NotionConfig
+      assert "semantic_provider" in inspect.signature(NotionProvider).parameters
+      assert "data_source_id" in inspect.signature(NotionConfig).parameters
     PYTHON
   end
 end
