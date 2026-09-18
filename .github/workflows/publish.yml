@@ -35,6 +35,13 @@ jobs:
         id: git_setup
         uses: Homebrew/actions/git-user-config@b35a29a0f83ee8b8ca07b219fc8db3d7bb88ab49 # 2026.08.10.2
 
+      - name: Record tap revision
+        id: tap
+        run: |
+          tap_repository="$(brew --repository "${GITHUB_REPOSITORY/homebrew-/}")"
+          echo "repository=$tap_repository" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(git -C "$tap_repository" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Pull bottles
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -54,3 +61,36 @@ jobs:
         uses: Homebrew/actions/git-try-push@b35a29a0f83ee8b8ca07b219fc8db3d7bb88ab49 # 2026.08.10.2
         with:
           branch: main
+
+      - name: Align release tag with published formula
+        # pr-pull creates the GitHub release before the new commits are pushed,
+        # so its lightweight tag initially points to the previous tap revision.
+        # Correct only that known revision; preserve any concurrent tag change.
+        env:
+          TAP_REPOSITORY: ${{ steps.tap.outputs.repository }}
+          BASE_SHA: ${{ steps.tap.outputs.base_sha }}
+        run: |
+          version="$(sed -nE 's@^  url "https://files\.pythonhosted\.org/.*/memorizz-([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz"$@\1@p' "$TAP_REPOSITORY/Formula/memorizz.rb")"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Cannot identify a stable PyPI release in the formula." >&2
+            exit 1
+          fi
+          release_tag="memorizz-$version"
+          target_sha="$(git -C "$TAP_REPOSITORY" rev-parse HEAD)"
+          remote_main="$(git -C "$TAP_REPOSITORY" ls-remote origin refs/heads/main | cut -f1)"
+          if [[ "$target_sha" != "$remote_main" ]]; then
+            echo "Refusing to tag a revision that does not match published main." >&2
+            exit 1
+          fi
+          remote_tag="$(git -C "$TAP_REPOSITORY" ls-remote origin "refs/tags/$release_tag" | cut -f1)"
+          if [[ "$remote_tag" == "$target_sha" ]]; then
+            echo "Release tag already matches the published formula."
+            exit 0
+          fi
+          if [[ -z "$BASE_SHA" || "$remote_tag" != "$BASE_SHA" ]]; then
+            echo "Refusing to overwrite an unexpected or missing release tag." >&2
+            exit 1
+          fi
+          git -C "$TAP_REPOSITORY" push \
+            --force-with-lease="refs/tags/$release_tag:$BASE_SHA" \
+            origin "$target_sha:refs/tags/$release_tag"
