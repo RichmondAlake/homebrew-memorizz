@@ -3,8 +3,8 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/74/52/3565d9da4906ad6b614f132bfc695cc73ab06227df4baa7f442db07f9815/memorizz-0.14.1.tar.gz"
-  sha256 "2dcbfb77523cb7d0ab3ddfb1cf6a49dd040a024bf92fc2a96d51138d07f08eb7"
+  url "https://files.pythonhosted.org/packages/1f/fd/e6e83133f21645fdcb0318603db2738bf326f70643d0774e6d99003b1e22/memorizz-0.15.0.tar.gz"
+  sha256 "4124a4aae6fe194d7be6970fd60ea5ab24963e27e24302c6093a7b05f59c2396"
   license "PolyForm-Noncommercial-1.0.0"
 
   depends_on "ninja" => :build
@@ -217,6 +217,13 @@ class Memorizz < Formula
       from memorizz import NotionProvider, NotionConfig
       assert "semantic_provider" in inspect.signature(NotionProvider).parameters
       assert "data_source_id" in inspect.signature(NotionConfig).parameters
+      from memorizz.metaharness.judging import judge_config, parse_verdict
+      assert judge_config()["model"] == "qwen2.5:3b"
+      assert parse_verdict('{"score": 80, "rationale": "Verified fixture"}')["score"] == 80
+      from memorizz.llms.openai import OpenAI
+      model = OpenAI(api_key="homebrew-test", model="gpt-6-luna")
+      assert model.api_mode == "responses"
+      model.client.close()
     PYTHON
   end
 end
