@@ -7,6 +7,12 @@ class Memorizz < Formula
   sha256 "4124a4aae6fe194d7be6970fd60ea5ab24963e27e24302c6093a7b05f59c2396"
   license "PolyForm-Noncommercial-1.0.0"
 
+  bottle do
+    root_url "https://github.com/RichmondAlake/homebrew-memorizz/releases/download/memorizz-0.15.0"
+    sha256 cellar: :any, arm64_tahoe:  "5a24457e9dd6d1d728270ce0c855ff47d3d68ec9f6840795105af43865042696"
+    sha256 cellar: :any, x86_64_linux: "0ef0ad45e651f768b11446ca127e6cb3dfc709d07d84348d978e434b294bbb0f"
+  end
+
   depends_on "ninja" => :build
   depends_on "rust" => :build
   depends_on "python@3.12"
