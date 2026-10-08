@@ -3,15 +3,9 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/1f/fd/e6e83133f21645fdcb0318603db2738bf326f70643d0774e6d99003b1e22/memorizz-0.15.0.tar.gz"
-  sha256 "4124a4aae6fe194d7be6970fd60ea5ab24963e27e24302c6093a7b05f59c2396"
+  url "https://files.pythonhosted.org/packages/28/aa/ab10f34d145519375fa76212632007122fe36c0968ca6bba7abfcc61fbfc/memorizz-0.16.0.tar.gz"
+  sha256 "f04c43a684bd83ecd824c036bf545ac57a506cea1b540f70614a8b48caf269f1"
   license "PolyForm-Noncommercial-1.0.0"
-
-  bottle do
-    root_url "https://github.com/RichmondAlake/homebrew-memorizz/releases/download/memorizz-0.15.0"
-    sha256 cellar: :any, arm64_tahoe:  "5a24457e9dd6d1d728270ce0c855ff47d3d68ec9f6840795105af43865042696"
-    sha256 cellar: :any, x86_64_linux: "0ef0ad45e651f768b11446ca127e6cb3dfc709d07d84348d978e434b294bbb0f"
-  end
 
   depends_on "ninja" => :build
   depends_on "rust" => :build
