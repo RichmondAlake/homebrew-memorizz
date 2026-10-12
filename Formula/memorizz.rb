@@ -3,8 +3,8 @@ class Memorizz < Formula
 
   desc "Memory-first agent harness and continual-learning control plane"
   homepage "https://github.com/RichmondAlake/memorizz"
-  url "https://files.pythonhosted.org/packages/89/f5/217510fbc8e6f600abbb7cf0c8950247f82f45e553f47748a6472037185b/memorizz-0.16.4.tar.gz"
-  sha256 "870e52c4f273a4aeb231ef6ed2ccef9cacf458f1e82390cb699f520ddc3ead22"
+  url "https://files.pythonhosted.org/packages/90/cc/9e1c499671dd3a16cbc0348ab9452c2e545ab2a4673e38f89a45a1d2b29d/memorizz-0.16.5.tar.gz"
+  sha256 "f8249dcc58fdcd1947ff2cd672493247a7c9c690b7b2af885af89f517d6eab7f"
   license "PolyForm-Noncommercial-1.0.0"
 
   depends_on "ninja" => :build
